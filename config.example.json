@@ -1,0 +1,108 @@
+{
+  "_说明": "复制本文件为 config.json 后填写密钥。config.json 已被 .gitignore 忽略，不要提交。",
+
+  "feishu": {
+    "_说明": "飞书自定义机器人。webhook 必填；若机器人开启了『签名校验』，请同时填 secret。",
+    "webhook": "https://open.feishu.cn/open-apis/bot/v2/hook/在此填入你的-webhook-token",
+    "secret": "",
+    "_secret说明": "留空表示未开启签名校验。三者（关键词/IP白名单/签名）可叠加。"
+  },
+
+  "deepseek": {
+    "_说明": "用于生成中文摘要。留空 api_key 则自动降级为『英文原题 + 源自带描述』，不影响推送。",
+    "api_key": "",
+    "base_url": "https://api.deepseek.com",
+    "model": "deepseek-chat",
+    "timeout": 90,
+    "_备注": "AI 摘要为可选增值项，失败不会中断日报。"
+  },
+
+  "digest": {
+    "max_items": 20,
+    "quota_github": 5,
+    "quota_ai": 10,
+    "quota_media": 5,
+    "reserve_cn_ai": 3,
+    "max_per_source": 2,
+    "max_per_source_github": 5,
+    "window_hours": 24,
+    "window_hours_monday": 72,
+    "window_hours_max": 72,
+    "auto_catchup": true,
+    "catchup_max_hours": 168,
+    "_说明": "周一自动放宽到 window_hours_monday 以覆盖周末；上限 window_hours_max。",
+    "_说明补跑": "auto_catchup=true 时，若距上次成功推送超过 1 天（例如几天没开机），时窗会自动放宽到覆盖那段空档，最多 catchup_max_hours（默认 168h=7天），避免漏掉的内容永久丢失。",
+    "_说明2": "reserve_cn_ai=中文源在 AI 组里的保底条数（DeepSeek 不可用时唯一的中文可读来源）。",
+    "_说明3": "max_per_source=同一来源在单个分组里最多占几条，防止高产 feed 独占（实测 MIT Tech Review 曾占满全部 5 个媒体位）。",
+    "_说明4": "min_zh_required=日报要求的最少中文条数；不足时记入告警日志（便于发现摘要服务异常）。"
+  },
+
+  "ai_filter": {
+    "hn_min_points": 10,
+    "ai_host_points_72h": 30,
+    "_说明": "HN 条目按分数门槛筛选；24h 时窗用 hn_min_points，72h 时窗用 ai_host_points_72h。"
+  },
+
+  "network": {
+    "timeout": 25,
+    "retries": 3,
+    "backoff_seconds": [2, 8, 30],
+    "_说明": "本机网络有间歇性 TLS 断连，重试为必需项。"
+  },
+
+  "sources": {
+    "_说明": "gn_ai=中文 AI/科技源（同时作为 LLM 失效时的中文兜底）；official=AI 官方/博客；media=其他热点。",
+    "gn_ai": [
+      { "name": "量子位", "url": "https://www.qbitai.com/feed", "enabled": true },
+      { "name": "爱范儿", "url": "https://www.ifanr.com/feed", "enabled": true },
+      { "name": "InfoQ 中文", "url": "https://www.infoq.cn/feed", "enabled": true },
+      { "name": "Solidot", "url": "https://www.solidot.org/index.rss", "enabled": true },
+      { "name": "少数派", "url": "https://sspai.com/feed", "enabled": true },
+      { "name": "掘金", "url": "https://juejin.cn/rss", "enabled": true },
+      { "name": "阮一峰周刊", "url": "https://www.ruanyifeng.com/blog/atom.xml", "enabled": true }
+    ],
+    "official": [
+      { "name": "OpenAI 官方", "url": "https://openai.com/news/rss.xml", "enabled": true },
+      { "name": "Google DeepMind", "url": "https://deepmind.google/blog/rss.xml", "enabled": true },
+      { "name": "HuggingFace 博客", "url": "https://huggingface.co/blog/feed.xml", "enabled": true },
+      { "name": "Simon Willison", "url": "https://simonwillison.net/atom/everything/", "enabled": true },
+      { "name": "GitHub 官方博客", "url": "https://github.blog/feed/", "enabled": true },
+      { "name": "Google AI 博客", "url": "https://blog.google/technology/ai/rss/", "enabled": true }
+    ],
+    "media": [
+      { "name": "TechCrunch", "url": "https://techcrunch.com/feed/", "enabled": true },
+      { "name": "The Verge", "url": "https://www.theverge.com/rss/index.xml", "enabled": true },
+      { "name": "Wired", "url": "https://www.wired.com/feed/rss", "enabled": true },
+      { "name": "Ars Technica", "url": "https://feeds.arstechnica.com/arstechnica/index", "enabled": true },
+      { "name": "MIT Tech Review", "url": "https://www.technologyreview.com/feed/", "enabled": true },
+      { "name": "Lobsters", "url": "https://lobste.rs/rss", "enabled": true }
+    ],
+    "github_trending": {
+      "enabled": true,
+      "url": "https://github.com/trending?since=daily",
+      "min_expected": 5,
+      "_说明": "min_expected 用于漂移告警：解析条数低于此值即告警，避免静默变瘦。"
+    },
+    "hacker_news": {
+      "enabled": true,
+      "keywords": ["AI", "LLM", "agent", "OpenAI", "Anthropic", "model", "GPT", "大模型"],
+      "hits_per_page": 50,
+      "max_pages": 1,
+      "min_points": 10,
+      "_说明": "用 search_by_date 多关键词聚合（实测 24h 内 220 条候选），远优于全站热榜过滤。"
+    }
+  },
+
+  "files": {
+    "ledger": "data/ledger.json",
+    "lock": "data/daily.lock",
+    "log": "logs/digest.log",
+    "preview": "logs/preview.md"
+  },
+
+  "schedule": {
+    "task_name": "DailyDigestFeishu",
+    "time": "09:05",
+    "_说明": "09:05 是『非整点非半点』时刻，避开飞书官方提示的 10:00/17:30 等系统压力高峰（防 11232 限流）；计划任务需勾选『错过计划开始时间后尽快启动』。"
+  }
+}
